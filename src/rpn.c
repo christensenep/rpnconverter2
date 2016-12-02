@@ -3,7 +3,7 @@
 
 #include "rpn.h"
 
-char* infix_to_postfix(const char* infixString) {
+char* rpn_infix_to_postfix(const char* infixString) {
   char operators[50];
   char* postfixString = (char*) calloc(50, sizeof(char));
   int charactersWritten = 0;

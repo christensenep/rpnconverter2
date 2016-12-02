@@ -4,7 +4,7 @@
 
 START_TEST(i2p_should_convert_empty_string_to_empty_string)
 {
-    char* postfixString = infix_to_postfix("");
+    char* postfixString = rpn_infix_to_postfix("");
     ck_assert_str_eq(postfixString, "");
     free(postfixString);
 }
@@ -12,7 +12,7 @@ END_TEST
 
 START_TEST(i2p_should_convert_single_operand)
 {
-    char* postfixString = infix_to_postfix("a");
+    char* postfixString = rpn_infix_to_postfix("a");
     ck_assert_str_eq(postfixString, "a");
     free(postfixString);
 }
@@ -20,7 +20,7 @@ END_TEST
 
 START_TEST(i2p_should_convert_single_operator)
 {
-    char* postfixString = infix_to_postfix("a+b");
+    char* postfixString = rpn_infix_to_postfix("a+b");
     ck_assert_str_eq(postfixString, "ab+");
     free(postfixString);
 }
