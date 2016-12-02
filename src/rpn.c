@@ -2,18 +2,19 @@
 #include <stdlib.h>
 
 #include "rpn.h"
+#include "dynamic_string.h"
 
 char* rpn_infix_to_postfix(const char* infixString) {
-  char operators[5];
-  char* postfixString = (char*) calloc(6, sizeof(char));
+  char operators[50];
   int charactersWritten = 0;
   int operatorsStored = 0;
+  rpn_DynamicString* postfixDynString = rpn_DynamicString_create();
 
   while (*infixString != '\0') {
     if (*infixString == '+') {
       if (operatorsStored > 0) {
         operatorsStored--;
-        postfixString[charactersWritten] = operators[operatorsStored];
+        rpn_DynamicString_addChar(postfixDynString, operators[operatorsStored]);
         charactersWritten++;
       }
 
@@ -21,7 +22,7 @@ char* rpn_infix_to_postfix(const char* infixString) {
       operatorsStored++;
     }
     else {
-      postfixString[charactersWritten] = *infixString;
+      rpn_DynamicString_addChar(postfixDynString, *infixString);
       charactersWritten++;
     }
 
@@ -29,10 +30,12 @@ char* rpn_infix_to_postfix(const char* infixString) {
   }
 
   while (operatorsStored > 0) {
-    postfixString[charactersWritten] = operators[operatorsStored - 1];
+    rpn_DynamicString_addChar(postfixDynString, operators[operatorsStored - 1]);
     charactersWritten++;
     operatorsStored--;
   }
 
+  char* postfixString = rpn_DynamicString_toString(postfixDynString);
+  rpn_DynamicString_delete(postfixDynString);
   return postfixString;
 }

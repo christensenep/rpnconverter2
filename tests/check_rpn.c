@@ -38,6 +38,15 @@ START_TEST(i2p_should_convert_chain_of_equal_precedence_operators)
 }
 END_TEST
 
+START_TEST(i2p_should_convert_very_long_chain_of_equal_precedence_operators)
+{
+    char* desiredPostfixString = "ab+c+d+e+f+g+h+i+j+k+m+n+o+p+q+r+s+t+u+v+w+x+y+z+";
+    char* actualPostfixString = rpn_infix_to_postfix("a+b+c+d+e+f+g+h+i+j+k+m+n+o+p+q+r+s+t+u+v+w+x+y+z");
+    ck_assert_str_eq(actualPostfixString, desiredPostfixString);
+    free(actualPostfixString);
+}
+END_TEST
+
 Suite* rpn_test_suite(void)
 {
     Suite* rpnSuite = suite_create("RPN");
@@ -47,6 +56,7 @@ Suite* rpn_test_suite(void)
     tcase_add_test(tcase_infix_to_postfix, i2p_should_convert_single_operand);
     tcase_add_test(tcase_infix_to_postfix, i2p_should_convert_single_operator);
     tcase_add_test(tcase_infix_to_postfix, i2p_should_convert_chain_of_equal_precedence_operators);
+    tcase_add_test(tcase_infix_to_postfix, i2p_should_convert_very_long_chain_of_equal_precedence_operators);
     suite_add_tcase(rpnSuite, tcase_infix_to_postfix);
 
     return rpnSuite;
