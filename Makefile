@@ -1,6 +1,12 @@
 CC=gcc
 CFLAGS=-Wall -O0 -g -std=c99 -Wpedantic
-LIBS=-lcheck
+LIBS=-lcheck -lm -lpthread
+
+UNAME := $(shell uname)
+
+ifneq ($(UNAME),Darwin)
+  LIBS += -lrt
+endif
 
 SRCDIR=src
 TESTDIR=tests
