@@ -31,5 +31,6 @@ char* rpn_infix_to_postfix(const char* infixString) {
 
   char* postfixString = rpn_DynamicString_toString(postfixDynString);
   rpn_DynamicString_delete(postfixDynString);
+  rpn_DynamicString_delete(operatorDynString);
   return postfixString;
 }
