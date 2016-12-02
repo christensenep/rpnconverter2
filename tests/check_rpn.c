@@ -92,6 +92,34 @@ START_TEST(i2p_should_recognize_nested_parenthetical_groupings)
 }
 END_TEST
 
+START_TEST(i2p_should_handle_provided_examples)
+{
+    char* desiredPostfixString1 = "abc-+";
+    char* desiredPostfixString2 = "ab+c-";
+    char* desiredPostfixString3 = "lmn^/o*p-";
+    char* desiredPostfixString4 = "lmn^/o*p-";
+    char* desiredPostfixString5 = "vw/x^yz-*";
+
+    char* actualPostfixString1 = rpn_infix_to_postfix("a+b-c");
+    char* actualPostfixString2 = rpn_infix_to_postfix("(a+b)-c");
+    char* actualPostfixString3 = rpn_infix_to_postfix("l/m^n*o-p");
+    char* actualPostfixString4 = rpn_infix_to_postfix("((l/(m^n))*o)-p");
+    char* actualPostfixString5 = rpn_infix_to_postfix("((v/w)^x)*(y-z)");
+
+    ck_assert_str_eq(actualPostfixString1, desiredPostfixString1);
+    ck_assert_str_eq(actualPostfixString2, desiredPostfixString2);
+    ck_assert_str_eq(actualPostfixString3, desiredPostfixString3);
+    ck_assert_str_eq(actualPostfixString4, desiredPostfixString4);
+    ck_assert_str_eq(actualPostfixString5, desiredPostfixString5);
+
+    free(actualPostfixString1);
+    free(actualPostfixString2);
+    free(actualPostfixString3);
+    free(actualPostfixString4);
+    free(actualPostfixString5);
+}
+END_TEST
+
 Suite* rpn_test_suite(void)
 {
     Suite* rpnSuite = suite_create("RPN");
@@ -107,6 +135,7 @@ Suite* rpn_test_suite(void)
     tcase_add_test(tcase_infix_to_postfix, i2p_should_recognize_a_single_parenthetical_expression);
     tcase_add_test(tcase_infix_to_postfix, i2p_should_recognize_multiple_non_nested_parenthetical_groupings);
     tcase_add_test(tcase_infix_to_postfix, i2p_should_recognize_nested_parenthetical_groupings);
+    tcase_add_test(tcase_infix_to_postfix, i2p_should_handle_provided_examples);
     suite_add_tcase(rpnSuite, tcase_infix_to_postfix);
 
     return rpnSuite;
