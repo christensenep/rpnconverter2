@@ -4,13 +4,19 @@
 #include "rpn.h"
 
 char* rpn_infix_to_postfix(const char* infixString) {
-  char operators[50];
-  char* postfixString = (char*) calloc(50, sizeof(char));
+  char operators[5];
+  char* postfixString = (char*) calloc(6, sizeof(char));
   int charactersWritten = 0;
   int operatorsStored = 0;
 
   while (*infixString != '\0') {
     if (*infixString == '+') {
+      if (operatorsStored > 0) {
+        operatorsStored--;
+        postfixString[charactersWritten] = operators[operatorsStored];
+        charactersWritten++;
+      }
+
       operators[operatorsStored] = *infixString;
       operatorsStored++;
     }
