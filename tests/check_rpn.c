@@ -4,33 +4,37 @@
 
 START_TEST(i2p_should_convert_empty_string_to_empty_string)
 {
-    char* postfixString = rpn_infix_to_postfix("");
-    ck_assert_str_eq(postfixString, "");
-    free(postfixString);
+    char* desiredPostfixString = "";
+    char* actualPostfixString = rpn_infix_to_postfix("");
+    ck_assert_str_eq(actualPostfixString, desiredPostfixString);
+    free(actualPostfixString);
 }
 END_TEST
 
 START_TEST(i2p_should_convert_single_operand)
 {
-    char* postfixString = rpn_infix_to_postfix("a");
-    ck_assert_str_eq(postfixString, "a");
-    free(postfixString);
+    char* desiredPostfixString = "a";
+    char* actualPostfixString = rpn_infix_to_postfix("a");
+    ck_assert_str_eq(actualPostfixString, desiredPostfixString);
+    free(actualPostfixString);
 }
 END_TEST
 
 START_TEST(i2p_should_convert_single_operator)
 {
-    char* postfixString = rpn_infix_to_postfix("a+b");
-    ck_assert_str_eq(postfixString, "ab+");
-    free(postfixString);
+    char* desiredPostfixString = "ab+";
+    char* actualPostfixString = rpn_infix_to_postfix("a+b");
+    ck_assert_str_eq(actualPostfixString, desiredPostfixString);
+    free(actualPostfixString);
 }
 END_TEST
 
 START_TEST(i2p_should_convert_chain_of_equal_precedence_operators)
 {
-    char* postfixString = rpn_infix_to_postfix("a+b+c");
-    ck_assert_str_eq(postfixString, "ab+c+");
-    free(postfixString);
+    char* desiredPostfixString = "ab+c+";
+    char* actualPostfixString = rpn_infix_to_postfix("a+b+c");
+    ck_assert_str_eq(actualPostfixString, desiredPostfixString);
+    free(actualPostfixString);
 }
 END_TEST
 
