@@ -32,18 +32,26 @@ char* rpn_infix_to_postfix(const char* infixString) {
   
   while (*currentInfixStringPos != '\0') {
     if (isOperator(*currentInfixStringPos)) {
-      char lastOperator = rpn_DynamicString_popChar(operatorDynString);
-
-      while (getPriority(lastOperator) >= getPriority(*currentInfixStringPos)) {
-        rpn_DynamicString_addChar(postfixDynString, lastOperator);
-        lastOperator = rpn_DynamicString_popChar(operatorDynString);
+      char poppedOperator;
+      while (getPriority(*currentInfixStringPos) <= getPriority(poppedOperator = rpn_DynamicString_popChar(operatorDynString))) {
+        rpn_DynamicString_addChar(postfixDynString, poppedOperator);
       }
 
-      if (lastOperator != '\0') {
-        rpn_DynamicString_addChar(operatorDynString, lastOperator);
+      if (poppedOperator != '\0') {
+        rpn_DynamicString_addChar(operatorDynString, poppedOperator);
       }
 
       rpn_DynamicString_addChar(operatorDynString, *currentInfixStringPos);
+    }
+    else if (*currentInfixStringPos == '(') {
+      rpn_DynamicString_addChar(operatorDynString, *currentInfixStringPos);
+    }
+    else if (*currentInfixStringPos == ')') {
+      char poppedOperator = rpn_DynamicString_popChar(operatorDynString);
+      while (poppedOperator != '(') {
+        rpn_DynamicString_addChar(postfixDynString, poppedOperator);
+        poppedOperator = rpn_DynamicString_popChar(operatorDynString);
+      }
     }
     else {
       rpn_DynamicString_addChar(postfixDynString, *currentInfixStringPos);

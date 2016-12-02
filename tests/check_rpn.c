@@ -65,6 +65,15 @@ START_TEST(i2p_should_recognize_operator_precedence)
 }
 END_TEST
 
+START_TEST(i2p_should_recognize_a_single_parenthetical_expression)
+{
+    char* desiredPostfixString = "abcd^+e/f*-";
+    char* actualPostfixString = rpn_infix_to_postfix("a-(b+c^d)/e*f");
+    ck_assert_str_eq(actualPostfixString, desiredPostfixString);
+    free(actualPostfixString);
+}
+END_TEST
+
 Suite* rpn_test_suite(void)
 {
     Suite* rpnSuite = suite_create("RPN");
@@ -77,6 +86,7 @@ Suite* rpn_test_suite(void)
     tcase_add_test(tcase_infix_to_postfix, i2p_should_convert_very_long_chain_of_equal_precedence_operators);
     tcase_add_test(tcase_infix_to_postfix, i2p_should_recognize_all_operators);
     tcase_add_test(tcase_infix_to_postfix, i2p_should_recognize_operator_precedence);
+    tcase_add_test(tcase_infix_to_postfix, i2p_should_recognize_a_single_parenthetical_expression);
     suite_add_tcase(rpnSuite, tcase_infix_to_postfix);
 
     return rpnSuite;
