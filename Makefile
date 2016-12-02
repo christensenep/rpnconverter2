@@ -5,7 +5,7 @@ LIBS=-lcheck
 SRCDIR=src
 TESTDIR=tests
 
-all: librpn.all
+all: librpn.a
 
 librpn.a: $(SRCDIR)/rpn.o
 	ar rcs $@ $^
