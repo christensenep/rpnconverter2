@@ -29,6 +29,10 @@ void rpn_DynamicString_addChar(rpn_DynamicString* dynamicString, char newChar) {
 }
 
 char rpn_DynamicString_popChar(rpn_DynamicString* dynamicString) {
+  if (dynamicString->currentLength == 0) {
+    return '\0';
+  }
+  
   dynamicString->currentLength--;
   return dynamicString->string[dynamicString->currentLength];
 }

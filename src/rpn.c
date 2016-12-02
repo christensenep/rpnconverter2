@@ -15,6 +15,15 @@ int isOperator(char character) {
   }
 }
 
+int getPriority(char operator) {
+  const char* ptr = strchr(RPN_OPERATORS, operator);
+  if (ptr == NULL || operator == '\0') {
+    return -1;
+  }
+    
+  return ptr - RPN_OPERATORS;
+}
+
 char* rpn_infix_to_postfix(const char* infixString) {
   rpn_DynamicString* operatorDynString = rpn_DynamicString_create();
   rpn_DynamicString* postfixDynString = rpn_DynamicString_create();
@@ -23,14 +32,15 @@ char* rpn_infix_to_postfix(const char* infixString) {
   
   while (*currentInfixStringPos != '\0') {
     if (isOperator(*currentInfixStringPos)) {
-      if (operatorDynString->currentLength > 0) {
-        char lastOperator = rpn_DynamicString_popChar(operatorDynString);
-        if (lastOperator == *currentInfixStringPos) {
-          rpn_DynamicString_addChar(postfixDynString, lastOperator);
-        }
-        else {
-          rpn_DynamicString_addChar(operatorDynString, lastOperator);
-        }
+      char lastOperator = rpn_DynamicString_popChar(operatorDynString);
+
+      while (getPriority(lastOperator) >= getPriority(*currentInfixStringPos)) {
+        rpn_DynamicString_addChar(postfixDynString, lastOperator);
+        lastOperator = rpn_DynamicString_popChar(operatorDynString);
+      }
+
+      if (lastOperator != '\0') {
+        rpn_DynamicString_addChar(operatorDynString, lastOperator);
       }
 
       rpn_DynamicString_addChar(operatorDynString, *currentInfixStringPos);
