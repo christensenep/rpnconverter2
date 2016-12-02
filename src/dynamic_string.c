@@ -28,6 +28,11 @@ void rpn_DynamicString_addChar(rpn_DynamicString* dynamicString, char newChar) {
   dynamicString->currentLength++;
 }
 
+char rpn_DynamicString_popChar(rpn_DynamicString* dynamicString) {
+  dynamicString->currentLength--;
+  return dynamicString->string[dynamicString->currentLength];
+}
+
 char* rpn_DynamicString_toString(const rpn_DynamicString* dynamicString) {
   char* returnString;
 

@@ -5,34 +5,28 @@
 #include "dynamic_string.h"
 
 char* rpn_infix_to_postfix(const char* infixString) {
-  char operators[50];
-  int charactersWritten = 0;
-  int operatorsStored = 0;
+  rpn_DynamicString* operatorDynString = rpn_DynamicString_create();
   rpn_DynamicString* postfixDynString = rpn_DynamicString_create();
 
-  while (*infixString != '\0') {
-    if (*infixString == '+') {
-      if (operatorsStored > 0) {
-        operatorsStored--;
-        rpn_DynamicString_addChar(postfixDynString, operators[operatorsStored]);
-        charactersWritten++;
+  const char* currentInfixStringPos = infixString;;
+  
+  while (*currentInfixStringPos != '\0') {
+    if (*currentInfixStringPos == '+') {
+      if (operatorDynString->currentLength > 0) {
+        rpn_DynamicString_addChar(postfixDynString, rpn_DynamicString_popChar(operatorDynString));
       }
 
-      operators[operatorsStored] = *infixString;
-      operatorsStored++;
+      rpn_DynamicString_addChar(operatorDynString, *currentInfixStringPos);
     }
     else {
-      rpn_DynamicString_addChar(postfixDynString, *infixString);
-      charactersWritten++;
+      rpn_DynamicString_addChar(postfixDynString, *currentInfixStringPos);
     }
 
-    infixString++;
+    currentInfixStringPos++;
   }
 
-  while (operatorsStored > 0) {
-    rpn_DynamicString_addChar(postfixDynString, operators[operatorsStored - 1]);
-    charactersWritten++;
-    operatorsStored--;
+  while (operatorDynString->currentLength != 0) {
+    rpn_DynamicString_addChar(postfixDynString, rpn_DynamicString_popChar(operatorDynString));
   }
 
   char* postfixString = rpn_DynamicString_toString(postfixDynString);
