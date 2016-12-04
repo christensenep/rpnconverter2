@@ -87,6 +87,15 @@ END_TEST
 
 /* Infix to Prefix Error Tests */
 
+START_TEST(i2p_should_error_on_empty_string)
+{
+    char* desiredPostfixPointer = NULL;
+    char* actualPostfixPointer = rpn_infix_to_postfix("");
+    ck_assert_ptr_eq(actualPostfixPointer, desiredPostfixPointer);
+    free(actualPostfixPointer);
+}
+END_TEST
+
 START_TEST(i2p_error_on_invalid_character)
 {
     char* desiredPostfixPointer = NULL;
@@ -143,12 +152,11 @@ START_TEST(i2p_error_on_operator_at_end_of_expression)
 }
 END_TEST
 
-START_TEST(i2p_should_error_on_empty_string)
+START_TEST(i2p_error_on_operator_at_start_of_parenthetical_expression)
 {
     char* desiredPostfixPointer = NULL;
-    char* actualPostfixPointer = rpn_infix_to_postfix("");
+    char* actualPostfixPointer = rpn_infix_to_postfix("e+f*(/a+c+d)");
     ck_assert_ptr_eq(actualPostfixPointer, desiredPostfixPointer);
-    free(actualPostfixPointer);
 }
 END_TEST
 
@@ -198,6 +206,7 @@ Suite* rpn_test_suite(void)
     tcase_add_test(tcase_infix_to_postfix, i2p_should_handle_provided_examples);
     suite_add_tcase(rpnSuite, tcase_infix_to_postfix);
 
+    tcase_add_test(tcase_infix_to_postfix_errors, i2p_should_error_on_empty_string);
     tcase_add_test(tcase_infix_to_postfix_errors, i2p_error_on_invalid_character);
     tcase_add_test(tcase_infix_to_postfix_errors, i2p_error_on_mismatched_closing_parentheses);
     tcase_add_test(tcase_infix_to_postfix_errors, i2p_error_on_mismatched_opening_parentheses);
@@ -205,7 +214,7 @@ Suite* rpn_test_suite(void)
     tcase_add_test(tcase_infix_to_postfix_errors, i2p_error_on_adjacent_operands);
     tcase_add_test(tcase_infix_to_postfix_errors, i2p_error_on_operator_at_start_of_expression);
     tcase_add_test(tcase_infix_to_postfix_errors, i2p_error_on_operator_at_end_of_expression);
-    tcase_add_test(tcase_infix_to_postfix_errors, i2p_should_error_on_empty_string);
+    tcase_add_test(tcase_infix_to_postfix_errors, i2p_error_on_operator_at_start_of_parenthetical_expression);
     suite_add_tcase(rpnSuite, tcase_infix_to_postfix_errors);
 
     return rpnSuite;
