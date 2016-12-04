@@ -80,7 +80,7 @@ char* parseInfixToPostfix(rpn_DynamicString* operatorDynString, rpn_DynamicStrin
     return NULL;
   }
 
-  while (operatorDynString->currentLength != 0) {
+  while (rpn_DynamicString_length(operatorDynString) != 0) {
     char poppedOperator = rpn_DynamicString_popChar(operatorDynString);
     if (poppedOperator == '(') {
       return NULL;

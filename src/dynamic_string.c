@@ -5,6 +5,12 @@
 
 #define RPN_INITIAL_STRING_LENGTH 8
 
+struct _rpn_DynamicString {
+  char* string;
+  int maxLength;
+  int currentLength;
+};
+
 rpn_DynamicString* rpn_DynamicString_create() {
   rpn_DynamicString* dynamicString = (rpn_DynamicString*) malloc(sizeof(rpn_DynamicString));
   dynamicString->maxLength = RPN_INITIAL_STRING_LENGTH;
@@ -43,6 +49,10 @@ char rpn_DynamicString_lastChar(rpn_DynamicString* dynamicString) {
   }
 
   return dynamicString->string[dynamicString->currentLength - 1];
+}
+
+int rpn_DynamicString_length(rpn_DynamicString* dynamicString) {
+  return dynamicString->currentLength;
 }
 
 char* rpn_DynamicString_toString(const rpn_DynamicString* dynamicString) {
