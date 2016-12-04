@@ -31,12 +31,13 @@ void deleteNode(Node* node) {
 
 void rpn_StringStack_delete(rpn_StringStack* stringStack) {
   deleteNode(stringStack->first);
+  free(stringStack);
 }
 
 void rpn_StringStack_pushString(rpn_StringStack* stringStack, const char* string) {
   Node* newNode = (Node*) malloc(sizeof(Node));
   newNode->next = stringStack->first;
-  newNode->string = (char*) malloc(sizeof(char) * strlen(string));
+  newNode->string = (char*) malloc(sizeof(char) * (strlen(string)+1));
   strcpy(newNode->string, string);
   stringStack->first = newNode;
 }
@@ -47,7 +48,7 @@ char* rpn_StringStack_popString(rpn_StringStack* stringStack) {
     return NULL;
   }
 
-  char* poppedString = (char*) malloc(sizeof(char) * strlen(poppedNode->string));
+  char* poppedString = (char*) malloc(sizeof(char) * (strlen(poppedNode->string)+1));
   strcpy(poppedString, poppedNode->string);
 
   Node* newFirstNode = poppedNode->next;
