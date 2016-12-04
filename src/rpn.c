@@ -140,6 +140,13 @@ char* parsePostfixToInfix(rpn_StringStack* operandStack, const char* postfixStri
     else if (isOperator(*currentPostfixStringPos)) {
       char* secondOperand = rpn_StringStack_popString(operandStack);
       char* firstOperand = rpn_StringStack_popString(operandStack);
+      
+      if (firstOperand == NULL) {
+        free(firstOperand);
+        free(secondOperand);
+        return NULL;
+      }
+
       char* resultingInfixExpression = createInfixExpression(firstOperand, secondOperand, *currentPostfixStringPos);
       rpn_StringStack_pushString(operandStack, resultingInfixExpression);
       free(resultingInfixExpression);

@@ -285,6 +285,14 @@ START_TEST(p2i_error_on_excess_operands)
 }
 END_TEST
 
+START_TEST(p2i_error_on_excess_operators)
+{
+    char* desiredInfixPtr = NULL;
+    char* actualInfixPtr = rpn_postfix_to_infix("ab-+cd*");
+    ck_assert_ptr_eq(actualInfixPtr, desiredInfixPtr);
+}
+END_TEST
+
 Suite* rpn_test_suite(void)
 {
     Suite* rpnSuite = suite_create("RPN");
@@ -329,6 +337,7 @@ Suite* rpn_test_suite(void)
 
     tcase_add_test(tcase_postfix_to_infix_errors, p2i_error_on_invalid_character);
     tcase_add_test(tcase_postfix_to_infix_errors, p2i_error_on_excess_operands);
+    tcase_add_test(tcase_postfix_to_infix_errors, p2i_error_on_excess_operators);
     suite_add_tcase(rpnSuite, tcase_postfix_to_infix_errors);
 
     return rpnSuite;
