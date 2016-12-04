@@ -1,10 +1,12 @@
+#include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-#include <ctype.h>
+#include <stdio.h>
 #include <stdbool.h>
 
 #include "rpn.h"
 #include "dynamic_string.h"
+#include "string_stack.h"
 
 #define RPN_OPERATORS "+-*/^"
 
@@ -101,32 +103,58 @@ char* rpn_infix_to_postfix(const char* infixString) {
   return postfixString;
 }
 
-char* rpn_postfix_to_infix(const char* postfixString) {
-  rpn_DynamicString* operandDynString = rpn_DynamicString_create();
-  rpn_DynamicString* infixDynString = rpn_DynamicString_create();
+char* createInfixExpression(const char* firstOperand, const char* secondOperand, char operator) {
+  bool leftNeedsParens = strlen(firstOperand) > 1;
+  bool rightNeedsParens = strlen(secondOperand) > 1;
 
-  char* currentPostfixStringPos = postfixString;
+  int leftSize = leftNeedsParens ? strlen(firstOperand) + 2 : strlen(firstOperand);
+  int rightSize = rightNeedsParens ? strlen(secondOperand) + 2 : strlen(secondOperand);
+
+  char* newExpression = (char*) malloc(sizeof(char) * (leftSize + 1 + rightSize));
+
+  if (leftNeedsParens) {
+    sprintf(newExpression, "(%s)%c", firstOperand, operator);
+  }
+  else {
+    sprintf(newExpression, "%s%c", firstOperand, operator);
+  }
+
+  if (rightNeedsParens) {
+    sprintf(newExpression+leftSize+1, "(%s)", secondOperand);
+  }
+  else {
+    sprintf(newExpression+leftSize+1, "%s", secondOperand);
+  }
+
+  return newExpression;
+}
+
+char* rpn_postfix_to_infix(const char* postfixString) {
+  rpn_StringStack* operandStack = rpn_StringStack_create();
+
+  const char* currentPostfixStringPos = postfixString;
 
   while (*currentPostfixStringPos != '\0') {
     if (isOperand(*currentPostfixStringPos)) {
-      rpn_DynamicString_addChar(operandDynString, *currentPostfixStringPos);
+      char operandString[2] = { *currentPostfixStringPos, '\0' };
+      rpn_StringStack_pushString(operandStack, operandString);
     }
     else if (isOperator(*currentPostfixStringPos)) {
-      char secondOperand = rpn_DynamicString_popChar(operandDynString);
-      char firstOperand = rpn_DynamicString_popChar(operandDynString);
-      rpn_DynamicString_addChar(infixDynString, firstOperand);
-      rpn_DynamicString_addChar(infixDynString, *currentPostfixStringPos);
-      rpn_DynamicString_addChar(infixDynString, secondOperand);
+      char* secondOperand = rpn_StringStack_popString(operandStack);
+      char* firstOperand = rpn_StringStack_popString(operandStack);
+      char* resultingInfixExpression = createInfixExpression(firstOperand, secondOperand, *currentPostfixStringPos);
+      rpn_StringStack_pushString(operandStack, resultingInfixExpression);
     }
+
     currentPostfixStringPos++;
   }
 
-  while (operandDynString->currentLength != 0) {
-    rpn_DynamicString_addChar(infixDynString, rpn_DynamicString_popChar(operandDynString));
+  char* infixString = rpn_StringStack_popString(operandStack);
+  if (infixString == NULL || !rpn_StringStack_isEmpty(operandStack)) {
+    return NULL;
   }
 
-  char* infixString = rpn_DynamicString_toString(infixDynString);
-  rpn_DynamicString_delete(operandDynString);
-  rpn_DynamicString_delete(infixDynString);
+
+  rpn_StringStack_delete(operandStack);
   return infixString;
 }
