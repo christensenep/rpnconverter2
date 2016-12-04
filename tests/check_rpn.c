@@ -213,6 +213,15 @@ START_TEST(p2i_should_handle_chain_of_operators)
 }
 END_TEST
 
+START_TEST(p2i_should_handle_multiple_groupings_of_operators)
+{
+    char* desiredInfixString = "(a*(b/c))-((d^e)+f)";
+    char* actualInfixString = rpn_postfix_to_infix("abc/*de^f+-");
+    ck_assert_str_eq(actualInfixString, desiredInfixString);
+    free(actualInfixString);
+}
+END_TEST
+
 START_TEST(i2p_should_handle_provided_examples)
 {
     char* desiredPostfixString1 = "abc-+";
@@ -278,6 +287,7 @@ Suite* rpn_test_suite(void)
     tcase_add_test(tcase_postfix_to_infix, p2i_should_convert_single_operand);
     tcase_add_test(tcase_postfix_to_infix, p2i_should_handle_single_operator);
     tcase_add_test(tcase_postfix_to_infix, p2i_should_handle_chain_of_operators);
+    tcase_add_test(tcase_postfix_to_infix, p2i_should_handle_multiple_groupings_of_operators);
     suite_add_tcase(rpnSuite, tcase_postfix_to_infix);
 
     suite_add_tcase(rpnSuite, tcase_postfix_to_infix_errors);
