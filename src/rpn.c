@@ -100,3 +100,10 @@ char* rpn_infix_to_postfix(const char* infixString) {
   rpn_DynamicString_delete(operatorDynString);
   return postfixString;
 }
+
+char* rpn_postfix_to_infix(const char* postfixString) {
+  char* infixString = calloc(sizeof(char), strlen(postfixString));
+  strcpy(infixString, postfixString);
+
+  return infixString;
+}

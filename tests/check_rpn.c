@@ -184,6 +184,17 @@ START_TEST(i2p_error_on_operand_following_closing_parentheses)
 }
 END_TEST
 
+/* Postfix to Infix Tests */
+
+START_TEST(p2i_should_convert_single_operand)
+{
+    char* desiredInfixString = "a";
+    char* actualInfixString = rpn_postfix_to_infix("a");
+    ck_assert_str_eq(actualInfixString, desiredInfixString);
+    free(actualInfixString);
+}
+END_TEST
+
 START_TEST(i2p_should_handle_provided_examples)
 {
     char* desiredPostfixString1 = "abc-+";
@@ -217,6 +228,8 @@ Suite* rpn_test_suite(void)
     Suite* rpnSuite = suite_create("RPN");
     TCase* tcase_infix_to_postfix = tcase_create("Infix To Postfix");
     TCase* tcase_infix_to_postfix_errors = tcase_create("Infix to Postfix Error Handling");
+    TCase* tcase_postfix_to_infix = tcase_create("Postfix To Infix");
+    TCase* tcase_postfix_to_infix_errors = tcase_create("Postfix to Infix Error Handling");
 
     tcase_add_test(tcase_infix_to_postfix, i2p_should_convert_single_operand);
     tcase_add_test(tcase_infix_to_postfix, i2p_should_convert_single_operator);
@@ -243,6 +256,11 @@ Suite* rpn_test_suite(void)
     tcase_add_test(tcase_infix_to_postfix_errors, i2p_error_on_operand_preceding_opening_parentheses);
     tcase_add_test(tcase_infix_to_postfix_errors, i2p_error_on_operand_following_closing_parentheses);
     suite_add_tcase(rpnSuite, tcase_infix_to_postfix_errors);
+
+    tcase_add_test(tcase_postfix_to_infix, p2i_should_convert_single_operand);
+    suite_add_tcase(rpnSuite, tcase_postfix_to_infix);
+
+    suite_add_tcase(rpnSuite, tcase_postfix_to_infix_errors);
 
     return rpnSuite;
 }
