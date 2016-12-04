@@ -145,6 +145,8 @@ char* rpn_postfix_to_infix(const char* postfixString) {
       char* resultingInfixExpression = createInfixExpression(firstOperand, secondOperand, *currentPostfixStringPos);
       rpn_StringStack_pushString(operandStack, resultingInfixExpression);
       free(resultingInfixExpression);
+      free(firstOperand);
+      free(secondOperand);
     }
 
     currentPostfixStringPos++;
@@ -154,7 +156,6 @@ char* rpn_postfix_to_infix(const char* postfixString) {
   if (infixString == NULL || !rpn_StringStack_isEmpty(operandStack)) {
     return NULL;
   }
-
 
   rpn_StringStack_delete(operandStack);
   return infixString;
