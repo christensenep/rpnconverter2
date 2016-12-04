@@ -144,6 +144,7 @@ char* rpn_postfix_to_infix(const char* postfixString) {
       char* firstOperand = rpn_StringStack_popString(operandStack);
       char* resultingInfixExpression = createInfixExpression(firstOperand, secondOperand, *currentPostfixStringPos);
       rpn_StringStack_pushString(operandStack, resultingInfixExpression);
+      free(resultingInfixExpression);
     }
 
     currentPostfixStringPos++;
