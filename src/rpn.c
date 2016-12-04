@@ -1,22 +1,23 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <stdbool.h>
 
 #include "rpn.h"
 #include "dynamic_string.h"
 
 #define RPN_OPERATORS "+-*/^"
 
-int isOperator(char character) {
+bool isOperator(char character) {
   if (character != '\0' && strchr(RPN_OPERATORS, character) != NULL) {
-    return 1;
+    return true;
   }
   else {
-    return 0;
+    return false;
   }
 }
 
-int isOperand(char character) {
+bool isOperand(char character) {
   return islower(character);
 }
 
@@ -30,27 +31,29 @@ int getPriority(char operator) {
 }
 
 char* parse_infix_to_postfix(rpn_DynamicString* operatorDynString, rpn_DynamicString* postfixDynString, const char* infixString) {
-
   const char* currentInfixStringPos = infixString;
-  
-  while (*currentInfixStringPos != '\0') {
-    if (isOperator(*currentInfixStringPos)) {
-      char poppedOperator;
-      while (getPriority(*currentInfixStringPos) <= getPriority(poppedOperator = rpn_DynamicString_popChar(operatorDynString))) {
-        rpn_DynamicString_addChar(postfixDynString, poppedOperator);
-      }
+  int expectingOperandOrOpenParens = true;
 
-      if (poppedOperator != '\0') {
-        rpn_DynamicString_addChar(operatorDynString, poppedOperator);
+  while (*currentInfixStringPos != '\0') {
+    if ((isOperand(*currentInfixStringPos) || (*currentInfixStringPos == '(')) != expectingOperandOrOpenParens) {
+      return NULL;
+    }
+
+    if (isOperator(*currentInfixStringPos)) {
+      while (getPriority(*currentInfixStringPos) <= getPriority(rpn_DynamicString_lastChar(operatorDynString))) {
+        rpn_DynamicString_addChar(postfixDynString, rpn_DynamicString_popChar(operatorDynString));
       }
 
       rpn_DynamicString_addChar(operatorDynString, *currentInfixStringPos);
+      expectingOperandOrOpenParens = true;
     }
     else if (isOperand(*currentInfixStringPos)) {
       rpn_DynamicString_addChar(postfixDynString, *currentInfixStringPos);
+      expectingOperandOrOpenParens = false;
     }
     else if (*currentInfixStringPos == '(') {
       rpn_DynamicString_addChar(operatorDynString, *currentInfixStringPos);
+      expectingOperandOrOpenParens = true;
     }
     else if (*currentInfixStringPos == ')') {
       char poppedOperator = rpn_DynamicString_popChar(operatorDynString);
@@ -62,6 +65,7 @@ char* parse_infix_to_postfix(rpn_DynamicString* operatorDynString, rpn_DynamicSt
         rpn_DynamicString_addChar(postfixDynString, poppedOperator);
         poppedOperator = rpn_DynamicString_popChar(operatorDynString);
       }
+      expectingOperandOrOpenParens = false;
     }
     else {
       return NULL;

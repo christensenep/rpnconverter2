@@ -29,12 +29,20 @@ void rpn_DynamicString_addChar(rpn_DynamicString* dynamicString, char newChar) {
 }
 
 char rpn_DynamicString_popChar(rpn_DynamicString* dynamicString) {
+  char poppedChar = rpn_DynamicString_lastChar(dynamicString);
+  if (dynamicString->currentLength > 0) {
+    dynamicString->currentLength--;
+  }
+
+  return poppedChar;
+}
+
+char rpn_DynamicString_lastChar(rpn_DynamicString* dynamicString) {
   if (dynamicString->currentLength == 0) {
     return '\0';
   }
-  
-  dynamicString->currentLength--;
-  return dynamicString->string[dynamicString->currentLength];
+
+  return dynamicString->string[dynamicString->currentLength - 1];
 }
 
 char* rpn_DynamicString_toString(const rpn_DynamicString* dynamicString) {
