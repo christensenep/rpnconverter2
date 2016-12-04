@@ -105,6 +105,15 @@ START_TEST(i2p_error_on_invalid_character)
 }
 END_TEST
 
+START_TEST(i2p_error_on_mismatched_closing_parentheses)
+{
+    char* desiredPostfixPointer = NULL;
+    char* actualPostfixPointer = rpn_infix_to_postfix("a+b)-c'");
+    ck_assert_ptr_eq(actualPostfixPointer, desiredPostfixPointer);
+    free(actualPostfixPointer);
+}
+END_TEST
+
 START_TEST(i2p_should_handle_provided_examples)
 {
     char* desiredPostfixString1 = "abc-+";
@@ -153,6 +162,7 @@ Suite* rpn_test_suite(void)
     suite_add_tcase(rpnSuite, tcase_infix_to_postfix);
 
     tcase_add_test(tcase_infix_to_postfix_errors, i2p_error_on_invalid_character);
+    tcase_add_test(tcase_infix_to_postfix_errors, i2p_error_on_mismatched_closing_parentheses);
     suite_add_tcase(rpnSuite, tcase_infix_to_postfix_errors);
 
     return rpnSuite;
