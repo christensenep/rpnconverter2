@@ -4,15 +4,6 @@
 
 /* Infix to Prefix Tests */
 
-START_TEST(i2p_should_convert_empty_string_to_empty_string)
-{
-    char* desiredPostfixString = "";
-    char* actualPostfixString = rpn_infix_to_postfix("");
-    ck_assert_str_eq(actualPostfixString, desiredPostfixString);
-    free(actualPostfixString);
-}
-END_TEST
-
 START_TEST(i2p_should_convert_single_operand)
 {
     char* desiredPostfixString = "a";
@@ -152,6 +143,15 @@ START_TEST(i2p_error_on_operator_at_end_of_expression)
 }
 END_TEST
 
+START_TEST(i2p_should_error_on_empty_string)
+{
+    char* desiredPostfixPointer = NULL;
+    char* actualPostfixPointer = rpn_infix_to_postfix("");
+    ck_assert_ptr_eq(actualPostfixPointer, desiredPostfixPointer);
+    free(actualPostfixPointer);
+}
+END_TEST
+
 START_TEST(i2p_should_handle_provided_examples)
 {
     char* desiredPostfixString1 = "abc-+";
@@ -186,7 +186,6 @@ Suite* rpn_test_suite(void)
     TCase* tcase_infix_to_postfix = tcase_create("Infix To Postfix");
     TCase* tcase_infix_to_postfix_errors = tcase_create("Infix to Postfix Error Handling");
 
-    tcase_add_test(tcase_infix_to_postfix, i2p_should_convert_empty_string_to_empty_string);
     tcase_add_test(tcase_infix_to_postfix, i2p_should_convert_single_operand);
     tcase_add_test(tcase_infix_to_postfix, i2p_should_convert_single_operator);
     tcase_add_test(tcase_infix_to_postfix, i2p_should_convert_chain_of_equal_precedence_operators);
@@ -206,6 +205,7 @@ Suite* rpn_test_suite(void)
     tcase_add_test(tcase_infix_to_postfix_errors, i2p_error_on_adjacent_operands);
     tcase_add_test(tcase_infix_to_postfix_errors, i2p_error_on_operator_at_start_of_expression);
     tcase_add_test(tcase_infix_to_postfix_errors, i2p_error_on_operator_at_end_of_expression);
+    tcase_add_test(tcase_infix_to_postfix_errors, i2p_should_error_on_empty_string);
     suite_add_tcase(rpnSuite, tcase_infix_to_postfix_errors);
 
     return rpnSuite;
