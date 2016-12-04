@@ -32,7 +32,7 @@ int getPriority(char operator) {
   return ptr - RPN_OPERATORS;
 }
 
-char* parse_infix_to_postfix(rpn_DynamicString* operatorDynString, rpn_DynamicString* postfixDynString, const char* infixString) {
+char* parseInfixToPostfix(rpn_DynamicString* operatorDynString, rpn_DynamicString* postfixDynString, const char* infixString) {
   const char* currentInfixStringPos = infixString;
   int expectingOperandOrOpenParens = true;
 
@@ -96,7 +96,7 @@ char* rpn_infix_to_postfix(const char* infixString) {
   rpn_DynamicString* operatorDynString = rpn_DynamicString_create();
   rpn_DynamicString* postfixDynString = rpn_DynamicString_create();
   
-  char* postfixString = parse_infix_to_postfix(operatorDynString, postfixDynString, infixString);
+  char* postfixString = parseInfixToPostfix(operatorDynString, postfixDynString, infixString);
 
   rpn_DynamicString_delete(postfixDynString);
   rpn_DynamicString_delete(operatorDynString);
@@ -129,9 +129,7 @@ char* createInfixExpression(const char* firstOperand, const char* secondOperand,
   return newExpression;
 }
 
-char* rpn_postfix_to_infix(const char* postfixString) {
-  rpn_StringStack* operandStack = rpn_StringStack_create();
-
+char* parsePostfixToInfix(rpn_StringStack* operandStack, const char* postfixString) {
   const char* currentPostfixStringPos = postfixString;
 
   while (*currentPostfixStringPos != '\0') {
@@ -148,14 +146,26 @@ char* rpn_postfix_to_infix(const char* postfixString) {
       free(firstOperand);
       free(secondOperand);
     }
+    else {
+      return NULL;
+    }
 
     currentPostfixStringPos++;
   }
 
   char* infixString = rpn_StringStack_popString(operandStack);
-  if (infixString == NULL || !rpn_StringStack_isEmpty(operandStack)) {
+  if (!rpn_StringStack_isEmpty(operandStack) || infixString == NULL) {
+    free(infixString);
     return NULL;
   }
+
+  return infixString;
+}
+
+char* rpn_postfix_to_infix(const char* postfixString) {
+  rpn_StringStack* operandStack = rpn_StringStack_create();
+
+  char* infixString = parsePostfixToInfix(operandStack, postfixString);
 
   rpn_StringStack_delete(operandStack);
   return infixString;

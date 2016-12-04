@@ -259,6 +259,16 @@ START_TEST(p2i_should_handle_provided_example)
 }
 END_TEST
 
+/* Postfix to Infix Error Tests */
+
+START_TEST(p2i_error_on_invalid_character)
+{
+    char* desiredInfixPtr = NULL;
+    char* actualInfixPtr = rpn_postfix_to_infix("Ab+");
+    ck_assert_ptr_eq(actualInfixPtr, desiredInfixPtr);
+}
+END_TEST
+
 Suite* rpn_test_suite(void)
 {
     Suite* rpnSuite = suite_create("RPN");
@@ -300,6 +310,7 @@ Suite* rpn_test_suite(void)
     tcase_add_test(tcase_postfix_to_infix, p2i_should_handle_provided_example);
     suite_add_tcase(rpnSuite, tcase_postfix_to_infix);
 
+    tcase_add_test(tcase_postfix_to_infix_errors, p2i_error_on_invalid_character);
     suite_add_tcase(rpnSuite, tcase_postfix_to_infix_errors);
 
     return rpnSuite;
