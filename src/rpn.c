@@ -58,7 +58,7 @@ char* parse_infix_to_postfix(rpn_DynamicString* operatorDynString, rpn_DynamicSt
         if (poppedOperator == '\0') {
           return NULL;
         }
-        
+
         rpn_DynamicString_addChar(postfixDynString, poppedOperator);
         poppedOperator = rpn_DynamicString_popChar(operatorDynString);
       }
@@ -71,7 +71,12 @@ char* parse_infix_to_postfix(rpn_DynamicString* operatorDynString, rpn_DynamicSt
   }
 
   while (operatorDynString->currentLength != 0) {
-    rpn_DynamicString_addChar(postfixDynString, rpn_DynamicString_popChar(operatorDynString));
+    char poppedOperator = rpn_DynamicString_popChar(operatorDynString);
+    if (poppedOperator == '(') {
+      return NULL;
+    }
+
+    rpn_DynamicString_addChar(postfixDynString, poppedOperator);
   }
 
   return rpn_DynamicString_toString(postfixDynString);
