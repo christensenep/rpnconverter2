@@ -195,6 +195,15 @@ START_TEST(p2i_should_convert_single_operand)
 }
 END_TEST
 
+START_TEST(p2i_should_handle_single_operator)
+{
+    char* desiredInfixString = "a+b";
+    char* actualInfixString = rpn_postfix_to_infix("ab+");
+    ck_assert_str_eq(actualInfixString, desiredInfixString);
+    free(actualInfixString);
+}
+END_TEST
+
 START_TEST(i2p_should_handle_provided_examples)
 {
     char* desiredPostfixString1 = "abc-+";
@@ -258,6 +267,7 @@ Suite* rpn_test_suite(void)
     suite_add_tcase(rpnSuite, tcase_infix_to_postfix_errors);
 
     tcase_add_test(tcase_postfix_to_infix, p2i_should_convert_single_operand);
+    tcase_add_test(tcase_postfix_to_infix, p2i_should_handle_single_operator);
     suite_add_tcase(rpnSuite, tcase_postfix_to_infix);
 
     suite_add_tcase(rpnSuite, tcase_postfix_to_infix_errors);

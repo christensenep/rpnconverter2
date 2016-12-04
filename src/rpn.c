@@ -102,8 +102,31 @@ char* rpn_infix_to_postfix(const char* infixString) {
 }
 
 char* rpn_postfix_to_infix(const char* postfixString) {
-  char* infixString = calloc(sizeof(char), strlen(postfixString));
-  strcpy(infixString, postfixString);
+  rpn_DynamicString* operandDynString = rpn_DynamicString_create();
+  rpn_DynamicString* infixDynString = rpn_DynamicString_create();
 
+  char* currentPostfixStringPos = postfixString;
+
+  while (*currentPostfixStringPos != '\0') {
+    if (isOperand(*currentPostfixStringPos)) {
+      rpn_DynamicString_addChar(operandDynString, *currentPostfixStringPos);
+    }
+    else if (isOperator(*currentPostfixStringPos)) {
+      char secondOperand = rpn_DynamicString_popChar(operandDynString);
+      char firstOperand = rpn_DynamicString_popChar(operandDynString);
+      rpn_DynamicString_addChar(infixDynString, firstOperand);
+      rpn_DynamicString_addChar(infixDynString, *currentPostfixStringPos);
+      rpn_DynamicString_addChar(infixDynString, secondOperand);
+    }
+    currentPostfixStringPos++;
+  }
+
+  while (operandDynString->currentLength != 0) {
+    rpn_DynamicString_addChar(infixDynString, rpn_DynamicString_popChar(operandDynString));
+  }
+
+  char* infixString = rpn_DynamicString_toString(infixDynString);
+  rpn_DynamicString_delete(operandDynString);
+  rpn_DynamicString_delete(infixDynString);
   return infixString;
 }
