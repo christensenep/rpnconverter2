@@ -85,6 +85,34 @@ START_TEST(i2p_should_recognize_nested_parenthetical_groupings)
 }
 END_TEST
 
+START_TEST(i2p_should_handle_provided_examples)
+{
+    char* desiredPostfixString1 = "abc-+";
+    char* desiredPostfixString2 = "ab+c-";
+    char* desiredPostfixString3 = "lmn^/o*p-";
+    char* desiredPostfixString4 = "lmn^/o*p-";
+    char* desiredPostfixString5 = "vw/x^yz-*";
+
+    char* actualPostfixString1 = rpn_infix_to_postfix("a+b-c");
+    char* actualPostfixString2 = rpn_infix_to_postfix("(a+b)-c");
+    char* actualPostfixString3 = rpn_infix_to_postfix("l/m^n*o-p");
+    char* actualPostfixString4 = rpn_infix_to_postfix("((l/(m^n))*o)-p");
+    char* actualPostfixString5 = rpn_infix_to_postfix("((v/w)^x)*(y-z)");
+
+    ck_assert_str_eq(actualPostfixString1, desiredPostfixString1);
+    ck_assert_str_eq(actualPostfixString2, desiredPostfixString2);
+    ck_assert_str_eq(actualPostfixString3, desiredPostfixString3);
+    ck_assert_str_eq(actualPostfixString4, desiredPostfixString4);
+    ck_assert_str_eq(actualPostfixString5, desiredPostfixString5);
+
+    free(actualPostfixString1);
+    free(actualPostfixString2);
+    free(actualPostfixString3);
+    free(actualPostfixString4);
+    free(actualPostfixString5);
+}
+END_TEST
+
 /* Infix to Prefix Error Tests */
 
 START_TEST(i2p_should_error_on_empty_string)
@@ -219,34 +247,6 @@ START_TEST(p2i_should_handle_multiple_groupings_of_operators)
     char* actualInfixString = rpn_postfix_to_infix("abc/*de^f+-");
     ck_assert_str_eq(actualInfixString, desiredInfixString);
     free(actualInfixString);
-}
-END_TEST
-
-START_TEST(i2p_should_handle_provided_examples)
-{
-    char* desiredPostfixString1 = "abc-+";
-    char* desiredPostfixString2 = "ab+c-";
-    char* desiredPostfixString3 = "lmn^/o*p-";
-    char* desiredPostfixString4 = "lmn^/o*p-";
-    char* desiredPostfixString5 = "vw/x^yz-*";
-
-    char* actualPostfixString1 = rpn_infix_to_postfix("a+b-c");
-    char* actualPostfixString2 = rpn_infix_to_postfix("(a+b)-c");
-    char* actualPostfixString3 = rpn_infix_to_postfix("l/m^n*o-p");
-    char* actualPostfixString4 = rpn_infix_to_postfix("((l/(m^n))*o)-p");
-    char* actualPostfixString5 = rpn_infix_to_postfix("((v/w)^x)*(y-z)");
-
-    ck_assert_str_eq(actualPostfixString1, desiredPostfixString1);
-    ck_assert_str_eq(actualPostfixString2, desiredPostfixString2);
-    ck_assert_str_eq(actualPostfixString3, desiredPostfixString3);
-    ck_assert_str_eq(actualPostfixString4, desiredPostfixString4);
-    ck_assert_str_eq(actualPostfixString5, desiredPostfixString5);
-
-    free(actualPostfixString1);
-    free(actualPostfixString2);
-    free(actualPostfixString3);
-    free(actualPostfixString4);
-    free(actualPostfixString5);
 }
 END_TEST
 
