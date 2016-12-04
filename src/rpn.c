@@ -110,7 +110,7 @@ char* createInfixExpression(const char* firstOperand, const char* secondOperand,
   int leftSize = leftNeedsParens ? strlen(firstOperand) + 2 : strlen(firstOperand);
   int rightSize = rightNeedsParens ? strlen(secondOperand) + 2 : strlen(secondOperand);
 
-  char* newExpression = (char*) malloc(sizeof(char) * (leftSize + 1 + rightSize));
+  char* newExpression = (char*) malloc(sizeof(char) * (leftSize + 1 + rightSize + 1));
 
   if (leftNeedsParens) {
     sprintf(newExpression, "(%s)%c", firstOperand, operator);
