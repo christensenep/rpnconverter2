@@ -74,6 +74,10 @@ char* parse_infix_to_postfix(rpn_DynamicString* operatorDynString, rpn_DynamicSt
     currentInfixStringPos++;
   }
 
+  if (expectingOperandOrOpenParens) {
+    return NULL;
+  }
+
   while (operatorDynString->currentLength != 0) {
     char poppedOperator = rpn_DynamicString_popChar(operatorDynString);
     if (poppedOperator == '(') {
