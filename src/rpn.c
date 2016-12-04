@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include "rpn.h"
 #include "dynamic_string.h"
@@ -15,6 +16,10 @@ int isOperator(char character) {
   }
 }
 
+int isOperand(char character) {
+  return islower(character);
+}
+
 int getPriority(char operator) {
   const char* ptr = strchr(RPN_OPERATORS, operator);
   if (ptr == NULL || operator == '\0') {
@@ -24,11 +29,9 @@ int getPriority(char operator) {
   return ptr - RPN_OPERATORS;
 }
 
-char* rpn_infix_to_postfix(const char* infixString) {
-  rpn_DynamicString* operatorDynString = rpn_DynamicString_create();
-  rpn_DynamicString* postfixDynString = rpn_DynamicString_create();
+char* parse_infix_to_postfix(rpn_DynamicString* operatorDynString, rpn_DynamicString* postfixDynString, const char* infixString) {
 
-  const char* currentInfixStringPos = infixString;;
+  const char* currentInfixStringPos = infixString;
   
   while (*currentInfixStringPos != '\0') {
     if (isOperator(*currentInfixStringPos)) {
@@ -43,6 +46,9 @@ char* rpn_infix_to_postfix(const char* infixString) {
 
       rpn_DynamicString_addChar(operatorDynString, *currentInfixStringPos);
     }
+    else if (isOperand(*currentInfixStringPos)) {
+      rpn_DynamicString_addChar(postfixDynString, *currentInfixStringPos);
+    }
     else if (*currentInfixStringPos == '(') {
       rpn_DynamicString_addChar(operatorDynString, *currentInfixStringPos);
     }
@@ -54,7 +60,7 @@ char* rpn_infix_to_postfix(const char* infixString) {
       }
     }
     else {
-      rpn_DynamicString_addChar(postfixDynString, *currentInfixStringPos);
+      return NULL;
     }
 
     currentInfixStringPos++;
@@ -64,7 +70,15 @@ char* rpn_infix_to_postfix(const char* infixString) {
     rpn_DynamicString_addChar(postfixDynString, rpn_DynamicString_popChar(operatorDynString));
   }
 
-  char* postfixString = rpn_DynamicString_toString(postfixDynString);
+  return rpn_DynamicString_toString(postfixDynString);
+}
+
+char* rpn_infix_to_postfix(const char* infixString) {
+  rpn_DynamicString* operatorDynString = rpn_DynamicString_create();
+  rpn_DynamicString* postfixDynString = rpn_DynamicString_create();
+  
+  char* postfixString = parse_infix_to_postfix(operatorDynString, postfixDynString, infixString);
+
   rpn_DynamicString_delete(postfixDynString);
   rpn_DynamicString_delete(operatorDynString);
   return postfixString;

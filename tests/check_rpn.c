@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "../src/rpn.h"
 
+/* Infix to Prefix Tests */
+
 START_TEST(i2p_should_convert_empty_string_to_empty_string)
 {
     char* desiredPostfixString = "";
@@ -92,6 +94,17 @@ START_TEST(i2p_should_recognize_nested_parenthetical_groupings)
 }
 END_TEST
 
+/* Infix to Prefix Error Tests */
+
+START_TEST(i2p_error_on_invalid_character)
+{
+    char* desiredPostfixPointer = NULL;
+    char* actualPostfixPointer = rpn_infix_to_postfix("A");
+    ck_assert_ptr_eq(actualPostfixPointer, desiredPostfixPointer);
+    free(actualPostfixPointer);
+}
+END_TEST
+
 START_TEST(i2p_should_handle_provided_examples)
 {
     char* desiredPostfixString1 = "abc-+";
@@ -124,6 +137,7 @@ Suite* rpn_test_suite(void)
 {
     Suite* rpnSuite = suite_create("RPN");
     TCase* tcase_infix_to_postfix = tcase_create("Infix To Postfix");
+    TCase* tcase_infix_to_postfix_errors = tcase_create("Infix to Postfix Error Handling");
 
     tcase_add_test(tcase_infix_to_postfix, i2p_should_convert_empty_string_to_empty_string);
     tcase_add_test(tcase_infix_to_postfix, i2p_should_convert_single_operand);
@@ -137,6 +151,9 @@ Suite* rpn_test_suite(void)
     tcase_add_test(tcase_infix_to_postfix, i2p_should_recognize_nested_parenthetical_groupings);
     tcase_add_test(tcase_infix_to_postfix, i2p_should_handle_provided_examples);
     suite_add_tcase(rpnSuite, tcase_infix_to_postfix);
+
+    tcase_add_test(tcase_infix_to_postfix_errors, i2p_error_on_invalid_character);
+    suite_add_tcase(rpnSuite, tcase_infix_to_postfix_errors);
 
     return rpnSuite;
 }
