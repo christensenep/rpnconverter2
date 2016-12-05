@@ -7,6 +7,7 @@ Installation
 ------------
 
 * Download the contents of this repository.
+* Install [Check](https://libcheck.github.io/check/) if necessary.
 * Type `make test` within the repository directory to build and run the tests. 
 
 Derivation of the Infix to Postfix algorithm used
