@@ -42,7 +42,7 @@ static int getPriority(char operator) {
   return ptr - RPN_OPERATORS;
 }
 
-static void consumeOperator(rpn_DynamicString* operatorDynString, rpn_DynamicString* postfixDynString, const char* currentInfixStringPos, bool* expectingOperandOrOpenParens) {
+static void consumeInfixOperator(rpn_DynamicString* operatorDynString, rpn_DynamicString* postfixDynString, const char* currentInfixStringPos, bool* expectingOperandOrOpenParens) {
   while (getPriority(*currentInfixStringPos) <= getPriority(rpn_DynamicString_lastChar(operatorDynString))) {
     rpn_DynamicString_addChar(postfixDynString, rpn_DynamicString_popChar(operatorDynString));
   }
@@ -50,17 +50,17 @@ static void consumeOperator(rpn_DynamicString* operatorDynString, rpn_DynamicStr
   *expectingOperandOrOpenParens = true;
 }
 
-static void consumeOperand(rpn_DynamicString* postfixDynString, const char* currentInfixStringPos, bool* expectingOperandOrOpenParens) {
+static void consumeInfixOperand(rpn_DynamicString* postfixDynString, const char* currentInfixStringPos, bool* expectingOperandOrOpenParens) {
   rpn_DynamicString_addChar(postfixDynString, *currentInfixStringPos);
   *expectingOperandOrOpenParens =  false;
 }
 
-static void consumeOpenParenthesis(rpn_DynamicString* operatorDynString, const char* currentInfixStringPos, bool* expectingOperandOrOpenParens) {
+static void consumeInfixOpenParenthesis(rpn_DynamicString* operatorDynString, const char* currentInfixStringPos, bool* expectingOperandOrOpenParens) {
   rpn_DynamicString_addChar(operatorDynString, *currentInfixStringPos);
   *expectingOperandOrOpenParens = true;
 }
 
-static RPN_PARSE_ERROR consumeCloseParenthesis(rpn_DynamicString* operatorDynString, rpn_DynamicString* postfixDynString, bool* expectingOperandOrOpenParens) {
+static RPN_PARSE_ERROR consumeInfixCloseParenthesis(rpn_DynamicString* operatorDynString, rpn_DynamicString* postfixDynString, bool* expectingOperandOrOpenParens) {
   char poppedOperator = rpn_DynamicString_popChar(operatorDynString);
   while (poppedOperator != '(') {
     if (poppedOperator == '\0') {
@@ -74,7 +74,7 @@ static RPN_PARSE_ERROR consumeCloseParenthesis(rpn_DynamicString* operatorDynStr
   return RPN_PARSE_SUCCESSFUL;
 }
 
-static RPN_PARSE_ERROR consumeRemainingOperators(rpn_DynamicString* operatorDynString, rpn_DynamicString* postfixDynString) {
+static RPN_PARSE_ERROR consumeInfixRemainingOperators(rpn_DynamicString* operatorDynString, rpn_DynamicString* postfixDynString) {
   while (rpn_DynamicString_length(operatorDynString) != 0) {
     char poppedOperator = rpn_DynamicString_popChar(operatorDynString);
     if (poppedOperator == '(') {
@@ -102,16 +102,16 @@ static char* parseInfixToPostfix(rpn_DynamicString* operatorDynString, rpn_Dynam
     if (!isCharacterPositionValid(currentInfixStringPos, expectingOperandOrOpenParens)) { return NULL; }
 
     if (isOperator(*currentInfixStringPos)) {
-      consumeOperator(operatorDynString, postfixDynString, currentInfixStringPos, &expectingOperandOrOpenParens);
+      consumeInfixOperator(operatorDynString, postfixDynString, currentInfixStringPos, &expectingOperandOrOpenParens);
     }
     else if (isOperand(*currentInfixStringPos)) {
-      consumeOperand(postfixDynString, currentInfixStringPos, &expectingOperandOrOpenParens);
+      consumeInfixOperand(postfixDynString, currentInfixStringPos, &expectingOperandOrOpenParens);
     }
     else if (*currentInfixStringPos == '(') {
-      consumeOpenParenthesis(operatorDynString, currentInfixStringPos, &expectingOperandOrOpenParens);
+      consumeInfixOpenParenthesis(operatorDynString, currentInfixStringPos, &expectingOperandOrOpenParens);
     }
     else if (*currentInfixStringPos == ')') {
-      if (consumeCloseParenthesis(operatorDynString, postfixDynString, &expectingOperandOrOpenParens) == RPN_INVALID_PARENTHETICAL) { return NULL; }
+      if (consumeInfixCloseParenthesis(operatorDynString, postfixDynString, &expectingOperandOrOpenParens) == RPN_INVALID_PARENTHETICAL) { return NULL; }
     }
     else {
       return NULL;
@@ -122,7 +122,7 @@ static char* parseInfixToPostfix(rpn_DynamicString* operatorDynString, rpn_Dynam
 
   if (expectingOperandOrOpenParens) { return NULL; }
 
-  if (consumeRemainingOperators(operatorDynString, postfixDynString) == RPN_INVALID_PARENTHETICAL) { return NULL; }
+  if (consumeInfixRemainingOperators(operatorDynString, postfixDynString) == RPN_INVALID_PARENTHETICAL) { return NULL; }
 
   return rpn_DynamicString_toString(postfixDynString);
 }
