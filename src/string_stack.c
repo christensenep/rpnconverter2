@@ -19,7 +19,7 @@ rpn_StringStack* rpn_StringStack_create() {
   return stringStack;
 }
 
-void deleteNode(Node* node) {
+static void deleteNode(Node* node) {
   if (node == NULL) {
     return;
   }

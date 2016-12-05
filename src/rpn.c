@@ -10,7 +10,7 @@
 
 #define RPN_OPERATORS "+-*/^"
 
-bool isOperator(char character) {
+static bool isOperator(char character) {
   if (character != '\0' && strchr(RPN_OPERATORS, character) != NULL) {
     return true;
   }
@@ -19,11 +19,11 @@ bool isOperator(char character) {
   }
 }
 
-bool isOperand(char character) {
+static bool isOperand(char character) {
   return islower(character);
 }
 
-int getPriority(char operator) {
+static int getPriority(char operator) {
   const char* ptr = strchr(RPN_OPERATORS, operator);
   if (ptr == NULL || operator == '\0') {
     return -1;
@@ -32,7 +32,7 @@ int getPriority(char operator) {
   return ptr - RPN_OPERATORS;
 }
 
-char* parseInfixToPostfix(rpn_DynamicString* operatorDynString, rpn_DynamicString* postfixDynString, const char* infixString) {
+static char* parseInfixToPostfix(rpn_DynamicString* operatorDynString, rpn_DynamicString* postfixDynString, const char* infixString) {
   const char* currentInfixStringPos = infixString;
   int expectingOperandOrOpenParens = true;
 
@@ -92,18 +92,7 @@ char* parseInfixToPostfix(rpn_DynamicString* operatorDynString, rpn_DynamicStrin
   return rpn_DynamicString_toString(postfixDynString);
 }
 
-char* rpn_infix_to_postfix(const char* infixString) {
-  rpn_DynamicString* operatorDynString = rpn_DynamicString_create();
-  rpn_DynamicString* postfixDynString = rpn_DynamicString_create();
-  
-  char* postfixString = parseInfixToPostfix(operatorDynString, postfixDynString, infixString);
-
-  rpn_DynamicString_delete(postfixDynString);
-  rpn_DynamicString_delete(operatorDynString);
-  return postfixString;
-}
-
-char* createInfixExpression(const char* firstOperand, const char* secondOperand, char operator) {
+static char* createInfixExpression(const char* firstOperand, const char* secondOperand, char operator) {
   bool leftNeedsParens = strlen(firstOperand) > 1;
   bool rightNeedsParens = strlen(secondOperand) > 1;
 
@@ -129,7 +118,7 @@ char* createInfixExpression(const char* firstOperand, const char* secondOperand,
   return newExpression;
 }
 
-char* parsePostfixToInfix(rpn_StringStack* operandStack, const char* postfixString) {
+static char* parsePostfixToInfix(rpn_StringStack* operandStack, const char* postfixString) {
   const char* currentPostfixStringPos = postfixString;
 
   while (*currentPostfixStringPos != '\0') {
@@ -167,6 +156,17 @@ char* parsePostfixToInfix(rpn_StringStack* operandStack, const char* postfixStri
   }
 
   return infixString;
+}
+
+char* rpn_infix_to_postfix(const char* infixString) {
+  rpn_DynamicString* operatorDynString = rpn_DynamicString_create();
+  rpn_DynamicString* postfixDynString = rpn_DynamicString_create();
+  
+  char* postfixString = parseInfixToPostfix(operatorDynString, postfixDynString, infixString);
+
+  rpn_DynamicString_delete(postfixDynString);
+  rpn_DynamicString_delete(operatorDynString);
+  return postfixString;
 }
 
 char* rpn_postfix_to_infix(const char* postfixString) {
