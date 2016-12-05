@@ -13,7 +13,7 @@ struct _rpn_StringStack {
   Node* first;
 };
 
-rpn_StringStack* rpn_StringStack_create() {
+rpn_StringStack* rpn_StringStack_create(void) {
   rpn_StringStack* stringStack = (rpn_StringStack*) malloc(sizeof(rpn_StringStack));
   stringStack->first = NULL;
   return stringStack;

@@ -11,7 +11,7 @@ struct _rpn_DynamicString {
   int currentLength;
 };
 
-rpn_DynamicString* rpn_DynamicString_create() {
+rpn_DynamicString* rpn_DynamicString_create(void) {
   rpn_DynamicString* dynamicString = (rpn_DynamicString*) malloc(sizeof(rpn_DynamicString));
   dynamicString->maxLength = RPN_INITIAL_STRING_LENGTH;
   dynamicString->currentLength = 0;
