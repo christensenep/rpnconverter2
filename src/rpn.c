@@ -16,6 +16,10 @@ typedef int RPN_PARSE_ERROR;
 #define RPN_INVALID_PARENTHETICAL 1
 #endif
 
+#ifndef RPN_TOO_MANY_OPERATORS
+#define RPN_TOO_MANY_OPERATORS 2
+#endif
+
 #ifndef RPN_PARSE_SUCCESSFUL
 #define RPN_PARSE_SUCCESSFUL 0
 #endif 
@@ -111,7 +115,7 @@ static char* parseInfixToPostfix(rpn_DynamicString* operatorDynString, rpn_Dynam
       consumeInfixOpenParenthesis(operatorDynString, currentInfixStringPos, &expectingOperandOrOpenParens);
     }
     else if (*currentInfixStringPos == ')') {
-      if (consumeInfixCloseParenthesis(operatorDynString, postfixDynString, &expectingOperandOrOpenParens) == RPN_INVALID_PARENTHETICAL) { return NULL; }
+      if (consumeInfixCloseParenthesis(operatorDynString, postfixDynString, &expectingOperandOrOpenParens) != RPN_PARSE_SUCCESSFUL) { return NULL; }
     }
     else {
       return NULL;
@@ -122,7 +126,7 @@ static char* parseInfixToPostfix(rpn_DynamicString* operatorDynString, rpn_Dynam
 
   if (expectingOperandOrOpenParens) { return NULL; }
 
-  if (consumeInfixRemainingOperators(operatorDynString, postfixDynString) == RPN_INVALID_PARENTHETICAL) { return NULL; }
+  if (consumeInfixRemainingOperators(operatorDynString, postfixDynString) !=  RPN_PARSE_SUCCESSFUL) { return NULL; }
 
   return rpn_DynamicString_toString(postfixDynString);
 }
@@ -153,29 +157,39 @@ static char* createInfixExpression(const char* firstOperand, const char* secondO
   return newExpression;
 }
 
+static void consumePostfixOperand(rpn_StringStack* operandStack, const char* currentPostfixStringPos) {
+  char operandString[2] = { *currentPostfixStringPos, '\0' };
+  rpn_StringStack_pushString(operandStack, operandString);
+}
+
+static RPN_PARSE_ERROR consumePostfixOperator(rpn_StringStack* operandStack, const char* currentPostfixStringPos) {
+  char* secondOperand = rpn_StringStack_popString(operandStack);
+  char* firstOperand = rpn_StringStack_popString(operandStack);
+  
+  if (firstOperand == NULL) {
+    free(firstOperand);
+    free(secondOperand);
+    return RPN_TOO_MANY_OPERATORS;
+  }
+
+  char* resultingInfixExpression = createInfixExpression(firstOperand, secondOperand, *currentPostfixStringPos);
+  rpn_StringStack_pushString(operandStack, resultingInfixExpression);
+  free(resultingInfixExpression);
+  free(firstOperand);
+  free(secondOperand);
+
+  return RPN_PARSE_SUCCESSFUL;
+}
+
 static char* parsePostfixToInfix(rpn_StringStack* operandStack, const char* postfixString) {
   const char* currentPostfixStringPos = postfixString;
 
   while (*currentPostfixStringPos != '\0') {
     if (isOperand(*currentPostfixStringPos)) {
-      char operandString[2] = { *currentPostfixStringPos, '\0' };
-      rpn_StringStack_pushString(operandStack, operandString);
+      consumePostfixOperand(operandStack, currentPostfixStringPos);
     }
     else if (isOperator(*currentPostfixStringPos)) {
-      char* secondOperand = rpn_StringStack_popString(operandStack);
-      char* firstOperand = rpn_StringStack_popString(operandStack);
-      
-      if (firstOperand == NULL) {
-        free(firstOperand);
-        free(secondOperand);
-        return NULL;
-      }
-
-      char* resultingInfixExpression = createInfixExpression(firstOperand, secondOperand, *currentPostfixStringPos);
-      rpn_StringStack_pushString(operandStack, resultingInfixExpression);
-      free(resultingInfixExpression);
-      free(firstOperand);
-      free(secondOperand);
+      if (consumePostfixOperator(operandStack, currentPostfixStringPos) != RPN_PARSE_SUCCESSFUL) { return NULL; }
     }
     else {
       return NULL;
